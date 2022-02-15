@@ -48,7 +48,7 @@ nS = 3; % number of states
 
 
 %% BEMD 
-for m =898:N
+for m =1:N
     noise = mvnrnd([0 0 0],[1 0 0;0 1 0;0 0 1],length(t))';
     ex1 = noise(1,:);
     ex2 = noise(2,:);
@@ -117,6 +117,7 @@ placeholder = [1 2 3;7 8 9];
 figure;
 h = tight_subplot(3, nS, [.001 .001],[.01 .001],[.05 .05]);
 labels = {'CIRC','CRP'};
+set(h(4:6),'visible','off')
 for j = 1:nS
     for i = 1:2
         count = count + 1;
@@ -134,7 +135,7 @@ for j = 1:nS
     end
     
 end
-
+colorbar(h(8),'Position',[0.93 0.168 0.022 0.7]); caxis([-1 1])
 
 
 for i = 1:N
@@ -198,5 +199,161 @@ cb.TickLabels = labelChar(1:end-1);
 cb.FontSize = 12; 
 
 
+%% na-MEMD
+clear DELPHI
+indx = nchoosek(1:size(Data{1},2),2);
+N=1000;nS = 3;
+
+for m =1:N
+    noise = mvnrnd([0 0 0],[1 0 0;0 1 0;0 0 1],length(t))';
+    ex1 = noise(1,:);
+    ex2 = noise(2,:);
+    ex3 = noise(3,:);
+    XN1 = x1 + ex1;
+    XN2 = x2 + ex2;
+    XN3 = x3 + ex3;
+    Data{m} = [XN1;XN2;XN3]';
+    % assigning the criterias
+    stp_crit = 'stop';
+    stp_vec = [0.3 0.3 0.3];
+    mode = 'na_fix';
+    intensity_noise = 0.75; 
+    n_channel_na = size(Data{m},2);  
+    ndir = 2*n_channel_na; 
+    imf = namemd(Data{m}, ndir, stp_crit, stp_vec, mode, intensity_noise, n_channel_na);
+  
+    % Finding the mean frequency of each IMFs
+    for i=1:size(imf,1)
+        for j = 1:size(imf{1},1)
+            mfreq{m}(i,j) = meanfreq(imf{i}(j,:),fs);                                        
+        end
+    end
+    
+    
+    % Phase Synchronization analysis:
+    [~,ind] = min(abs(mfreq{m}' - f));
+    for i = 1:1:size(indx,1)
+        dat{m,i} = [imf{indx(i,1)}(ind(indx(i,1)),:);imf{indx(i,2)}(ind(indx(i,2)),:)];
+        H = hilbert(dat{m,i}');
+        sigphase = angle(H);
+        DELPHI{m} = sigphase(:,1)-sigphase(:,2);
+        CCORSW{m}(:,i) = circularslidingwindow(sigphase(:,1),sigphase(:,2),winLen,'vonmises');
+        COSDELPHI1{m}(:,i) = cos(DELPHI{m});
+    end
+    
+end
+    
 
 
+% k-means clustering of the matrices of phase synch. (number of clusters
+% using DBI) upperbound for DBI was set to nS 
+[popidx{1},popCorr{1},~,~,~,DBI(1)] = mykmeans(cat(1,CCORSW{:}),nS,nS);
+[popidx{2},popCorr{2},~,~,~,DBI(2)] = mykmeans(cat(1,COSDELPHI1{:}),nS,nS);
+
+%%%%% for each simulation, match them with the population state --- or the
+%%%%% ground truth
+for i = 1:N
+% k-means clustering of the matrices of phase synch.
+[idx{1,i},Corr{1,i}] = mykmeans(CCORSW{i},nS,nS);
+[idx{2,i},Corr{2,i}] = mykmeans(COSDELPHI1{i},nS,nS);
+[~,~,mCorr{1,i},midx{1,i}] = matchstatesClutster(grdstate{1},Corr{1,i},idx{1,i},1);
+[~,~,mCorr{2,i},midx{2,i}] = matchstatesClutster(grdstate{1},Corr{2,i},idx{2,i},1);
+end
+
+for i = 1:N
+    for j = 1:nS 
+        ccstate{j}(:,:,i) = mCorr{1,i}(:,:,j);
+        crpstate{j}(:,:,i) = mCorr{2,i}(:,:,j);
+    end
+end
+
+for i = 1:nS
+    meanstate{i,1} = mean(ccstate{i},3);
+    meanstate{i,2} = mean(crpstate{i},3);
+end
+
+count = 0;
+placeholder = [1 2 3;7 8 9];
+figure;
+h = tight_subplot(3, nS, [.001 .001],[.01 .001],[.05 .05]);
+labels = {'CIRC','CRP'};
+set(h(4:6),'visible','off')
+for j = 1:nS
+    for i = 1:2
+        count = count + 1;
+        axes(h(placeholder(count)));gsplot(meanstate{j,i});
+        axis square;
+        set(gca, 'XTick', [], 'YTick', [], 'CLim', [-1 1])
+        c = get(gca, 'Children');
+        set(c(find(strcmp(get(c, 'Type'),'line'))), 'Color', 'w')
+        if i == 1
+         title(strcat(['State ' num2str(j)]));
+        end
+        if j == 1
+            ylabel(labels{i},'interpreter','latex');
+        end
+    end
+    
+end
+colorbar(h(8),'Position',[0.93 0.168 0.022 0.7]); caxis([-1 1]);
+
+
+for i = 1:N
+    MIDX1(:,i) = midx{1,i};
+    MIDX2(:,i) = midx{2,i};
+end
+
+for i = 1:size(MIDX1,1)
+    flag1(i) = sum( MIDX1(i,:) == grdidx(i))/N;
+    flag2(i) = sum( MIDX2(i,:) == grdidx(i))/N;
+end
+
+for j = 1:nS
+for i = 1:size(MIDX1,1)
+    flags1(i,j) = sum( MIDX1(i,:) == j)/N;
+    flags2(i,j) = sum( MIDX2(i,:) == j)/N;
+end
+end
+
+
+
+
+figure;subplot(3,1,1);plot(grdidx,'r','LineWidth',2);ylim([0 4]);xlabel('t');
+ylabel('State #');title('Ground truth state')
+subplot(3,1,2);plot(flag1,'g','LineWidth',2);
+title('Accuracy of correctly classifying the state');ylabel('Accuracy');xlabel('t')
+subplot(3,1,3);bar(flags1,'stacked')
+title('Stacked bar of the classification accuracy across time');
+legend('State 1','State 2','State 3');
+ylabel('State Accuracy Proportion');xlabel('t')
+
+
+
+
+figure;imagesc(MIDX1');colormap winter;
+imAlpha=ones(size(MIDX1'));
+imAlpha(isnan(MIDX1'))=0;
+imagesc(MIDX1','AlphaData',imAlpha);
+set(gca,'color',1*[1 1 1]);
+title('State transitions - na-MEMD-based-PS using tWPS: CIRC');
+xlabel('time [s]');ylabel('realizations')
+cb = colorbar();
+% Set color labels (one for each row in RGB)
+label = 1:nS; 
+caxis([1,numel(label)])
+cb.YTick = 1 : nS;
+labelChar = label;
+cb.TickLabels = labelChar(1:end-1);
+cb.FontSize = 12; 
+
+figure;imagesc(MIDX2');colormap winter
+title('State transitions - na-MEMD-based-PS using IPS: CRP');
+xlabel('time [s]');ylabel('realizations');
+cb = colorbar();
+% Set color labels (one for each row in RGB)
+label = 1:nS; 
+caxis([1,numel(label)])
+cb.YTick = 1 : nS;
+labelChar = label;
+cb.TickLabels = labelChar(1:end-1);
+cb.FontSize = 12; 
