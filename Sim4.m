@@ -1,4 +1,4 @@
-%% Simulation 5:  The multicomponent signals (x: monocomponent, y: multicomponent)
+%% Simulation 4:  The multicomponent signals (x: monocomponent, y: multicomponent)
 % Purpose:  The purpose of theis code is to look at the mode mixing and
 % ability to untangle the frequencies closely placed in signal y in the PS
 % analysis in various measures.
