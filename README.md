@@ -2,7 +2,7 @@
 Please cite the following if you use any part of the script or code in your analysis and the appropriate reference listed below.
 
   [i] Honari, H., Choe, A. S., & Lindquist, M. A. (2021). Evaluating phase synchronization methods in fMRI: A comparison study and new approaches. NeuroImage, 228, 117704.
-  [ii] Honari, H., Lindquist, M. A. (2021). Measuring time-varying connectivity using tapered Windowed Phase Synchronization. 27th Annual Meeting of the Organization for Human Brain Mapping, Vol. 2, pp. 58
+  [ii] Honari, H., Lindquist, M. A. (2021). Measuring time-varying connectivity using tapered Windowed Phase Synchronization. 27th Annual Meeting of the Organization for Human Brain Mapping, Vol. 2, pp. 58\\
   
 The codes provided here are written in MATLAB.  The codes might require Signal Processing toolbox and some dependencies.  The proper references and dependencies for the codes are cited in the reference of the paper.  
 
