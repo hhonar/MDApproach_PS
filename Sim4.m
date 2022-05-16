@@ -102,8 +102,7 @@ title('(c)','interpreter','latex');xlim([0 450]);ylim([-1 1])
 clear COSDELPHI1 CCORSW mfreq
 Data{1} = [x;y]';
 
-
-indx = nchoosek(1:size(Data{1},1),2);
+indx = nchoosek(1:size(Data{1},2),2);
 
 w = [30 60 120];   % window sizes for the Windowed Phase Sync. Measures
 for m =1:N
