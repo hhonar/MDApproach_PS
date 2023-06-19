@@ -1,7 +1,29 @@
 # MDApproach_PS
-Please cite the following if you use any part of the script or code in your analysis and the appropriate reference listed below.
 
-  [i] Honari, H., Choe, A. S., & Lindquist, M. A. (2021). Evaluating phase synchronization methods in fMRI: A comparison study and new approaches. NeuroImage, 228, 117704.\
+This repository is focused on introducing the data-driven mode decomposition based phase synchronization framework as a way to investigate time-varying phase synchrony.  This allows for taking an in-depth look over this technique for assessing time-varying functional brain connectivity, or additionally any potential phase syncrhony between multivariate signals.
+
+
+#### Highlights:
+• Interest in measuring phase synchronization between brain regions across time.\
+• Analysis necessitates signals be sufficiently narrow-bandpassed.\
+• Using data-driven mode decomposition (MD) approaches to achieve this goal.\
+• To compare various MD approaches.\
+• Multivariate variational mode decomposition outperforms other MD approaches.\
+
+##### Description:
+This repository, while is intended to be used as a supplement to the Ref [i] below for assessing the time varying functional brain connectivity, it can also be leveraged as a signal processing and data driven technique for other applications as well where the synchrony between signals/time series are of interest.  
+
+1. Simulations 1-6 are named Sim123, Sim4, Sim5, and Sim6
+2. bemd.m: bivariate empirical mode decomposition
+3. namemd.m: noise assisted multivariate empirical mode decomposition
+4. mvmd.m: multivariate variational mode decompsoition 
+
+
+The app version of this repository in MATLAB which is based on the scripts here will be coming soon. 
+
+Please cite the following if you use any part of the script or code in your analysis and the appropriate reference listed below.
+  [i]  Honari, H. Lindquist, M. A. (2022) Mode decomposition-based time-varying phase synchronization for fMRI. NeuroImag Journal.\
+  [ii] Honari, H., Choe, A. S., & Lindquist, M. A. (2021). Evaluating phase synchronization methods in fMRI: A comparison study and new approaches. NeuroImage, 228, 117704.\
   [ii] Honari, H., Lindquist, M. A. (2021). Measuring time-varying connectivity using tapered Windowed Phase Synchronization. 27th Annual Meeting of the Organization for Human Brain Mapping, Vol. 2, pp. 58
   
 The codes provided here are written in MATLAB.  The codes might require Signal Processing toolbox and some dependencies.  The proper references and dependencies for the codes are cited in the reference of the paper.  
