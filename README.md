@@ -16,7 +16,8 @@ This repository, while is intended to be used as a supplement to the Ref [i] bel
 1. Simulations 1-6 are named Sim123, Sim4, Sim5, and Sim6
 2. bemd.m: bivariate empirical mode decomposition
 3. namemd.m: noise assisted multivariate empirical mode decomposition
-4. mvmd.m: multivariate variational mode decompsoition 
+4. mvmd.m: multivariate variational mode decompsoition
+5. gsplot.m: Subroutine writeen for creating grided covariance subplots
 
 
 The app version of this repository in MATLAB which is based on the scripts here will be coming soon. 
