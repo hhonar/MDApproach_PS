@@ -8,7 +8,7 @@ This repository is focused on introducing the data-driven mode decomposition bas
 • Analysis necessitates signals be sufficiently narrow-bandpassed.\
 • Using data-driven mode decomposition (MD) approaches to achieve this goal.\
 • To compare various MD approaches.\
-• Multivariate variational mode decomposition outperforms other MD approaches.\
+• Multivariate variational mode decomposition outperforms other MD approaches.
 
 ##### Description:
 This repository, while is intended to be used as a supplement to the Ref [i] below for assessing the time varying functional brain connectivity, it can also be leveraged as a signal processing and data driven technique for other applications as well where the synchrony between signals/time series are of interest.  
